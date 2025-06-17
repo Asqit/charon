@@ -41,7 +41,7 @@ def bump(current: str, part: str) -> str:
 
 
 def git_tag(version) -> None:
-    subprocess.run(["git", "add", "VERSION", "CHANGELOG.md"])
+    subprocess.run(["git", "add", "."])
     subprocess.run(["git", "commit", "-m", f"Release v{version}"])
     subprocess.run(["git", "tag", f"v{version}"])
     subprocess.run(["git", "push", "--follow-tags"])
@@ -53,7 +53,7 @@ def main() -> None:
         sys.exit(1)
 
     part = sys.argv[1]
-    current_version = read_version();
+    current_version = read_version()
     new_version = bump(current_version, part)
     write_version(new_version)
     add_changelog_record(new_version)

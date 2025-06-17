@@ -70,3 +70,9 @@ func (a *App) GetFileType(path string) (*utils.FileDetails, error) {
 
 	return details, nil
 }
+
+func (a *App) ClickToSelectFiles() ([]string, error) {
+	return runtime.OpenMultipleFilesDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "Select Files",
+	})
+}

@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import clsx from "clsx";
-import { GetFileType } from "wailsjs/go/main/App";
+import { ClickToSelectFiles, GetFileType } from "wailsjs/go/main/App";
 import { usePromise } from "@/usePromise";
 import { Loader } from "lucide-react";
 
@@ -41,6 +41,11 @@ export function DropZone({ handleSubmit }: Props) {
     });
 
     handleSubmit(files);
+  };
+
+  const handleClickSelect = async () => {
+    const files = await ClickToSelectFiles();
+    setFiles((p) => [...new Set([...p, ...files.map((p) => ({ path: p }))])]);
   };
 
   useEffect(() => {
@@ -101,7 +106,10 @@ export function DropZone({ handleSubmit }: Props) {
             </tbody>
           </table>
         ) : (
-          <div className="flex items-center justify-center w-full h-full p-8 flex-col select-none cursor-pointer">
+          <div
+            onClick={handleClickSelect}
+            className="flex items-center justify-center w-full h-full p-8 flex-col select-none cursor-pointer"
+          >
             <div className="p-3 bg-primary/10 rounded-full mb-4">
               <Upload className="h-8 w-8 text-primary" />
             </div>

@@ -4,6 +4,8 @@ import {utils} from '../models';
 
 export function AskForSaveLocation():Promise<string>;
 
+export function ClickToSelectFiles():Promise<Array<string>>;
+
 export function ConvertFiles(arg1:string,arg2:Array<utils.ToConvert>):Promise<boolean>;
 
 export function GetFileType(arg1:string):Promise<utils.FileDetails>;
