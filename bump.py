@@ -57,6 +57,7 @@ def main() -> None:
     new_version = bump(current_version, part)
     write_version(new_version)
     add_changelog_record(new_version)
+    git_tag(new_version)
 
 
     print(f"✔️ Bumped to v{new_version}")
