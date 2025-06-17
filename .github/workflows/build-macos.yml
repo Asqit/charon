@@ -1,0 +1,43 @@
+name: Build Charon (macOS)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-macos:
+    name: 🔨 Build macOS App
+    runs-on: macos-latest
+
+    steps:
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 🔧 Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 📦 Install Wails CLI
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+      - name: 📦 Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: 🔨 Build App via Makefile (includes ffmpeg copy)
+        run: make build
+
+      - name: 📤 Upload Built App Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: charon-macos-app
+          path: build/bin/charon.app
