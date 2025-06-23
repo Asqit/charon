@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -15,7 +16,15 @@ import (
 func GetffmpegPath() string {
 	exePath, _ := os.Executable()
 	exeDir := filepath.Dir(exePath)
-	ffmpegPath := filepath.Join(exeDir, "../Resources/ffmpeg") // macOS .app bundle
+
+	var ffmpegType string
+	if runtime.GOARCH == "arm64" {
+		ffmpegType = "ffmpeg-arm64"
+	} else {
+		ffmpegType = "ffmpeg"
+	}
+
+	ffmpegPath := filepath.Join(exeDir, "../Resources/", ffmpegType)
 	ffmpegPath, _ = filepath.Abs(ffmpegPath)
 
 	return ffmpegPath

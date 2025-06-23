@@ -7,6 +7,10 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"strings"
+	"sync"
+
+	goRuntime "runtime"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -39,27 +43,48 @@ func (a *App) AskForSaveLocation() (string, error) {
 	return folder, nil
 }
 
-// TODO: Handle the conversion with goroutines instead
-// Or check FFMPEG if it can't do bulk conversion
 func (a *App) ConvertFiles(destination string, files []utils.ToConvert) (bool, error) {
 	ffmpegPath := utils.GetffmpegPath()
+	chunkSize := goRuntime.NumCPU()
 
-	for _, file := range files {
-		outputFile := filepath.Join(destination, fmt.Sprintf("converted_%s.%s", filepath.Base(file.Path), file.Format))
-		cmd := exec.Command(ffmpegPath, "-y", "-i", file.Path, outputFile) // `-y` to overwrite
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	var success = true
 
-		var stdoutBuf, stderrBuf bytes.Buffer
-		cmd.Stdout = &stdoutBuf
-		cmd.Stderr = &stderrBuf
+	for i := 0; i < len(files); i += chunkSize {
+		end := i + chunkSize
+		if end > len(files) {
+			end = len(files)
+		}
 
-		err := cmd.Run()
+		selected := files[i:end]
+		for _, file := range selected {
+			wg.Add(1)
+			go func(file utils.ToConvert) {
+				defer wg.Done()
 
-		if err != nil {
-			return true, fmt.Errorf("ffmpeg failed for file %s: %v\n%s", file.Path, err, stderrBuf.String())
+				filename := strings.Split(filepath.Base(file.Path), ".")[0]
+				outputFile := filepath.Join(destination, fmt.Sprintf("converted_%s.%s", filename, file.Format))
+				cmd := exec.Command(ffmpegPath, "-y", "-i", file.Path, outputFile)
+
+				var stdoutBuf, stderrBuf bytes.Buffer
+				cmd.Stdout = &stdoutBuf
+				cmd.Stderr = &stderrBuf
+
+				err := cmd.Run()
+				mu.Lock()
+				defer mu.Unlock()
+				if err != nil {
+					success = false
+					fmt.Printf("Error converting file %s: %s\n", file.Path, stderrBuf.String())
+				}
+			}(file)
 		}
 	}
 
-	return false, nil
+	wg.Wait()
+
+	return success, nil
 }
 
 func (a *App) GetFileType(path string) (*utils.FileDetails, error) {
@@ -68,6 +93,7 @@ func (a *App) GetFileType(path string) (*utils.FileDetails, error) {
 		return nil, err
 	}
 
+	fmt.Println(details)
 	return details, nil
 }
 

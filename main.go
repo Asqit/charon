@@ -18,11 +18,10 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:     "Charon — From Format to Format, Across the Styx",
-		Width:     1024,
-		Height:    768,
-		MinWidth:  800,
-		MinHeight: 600,
+		Title:         "Charon",
+		DisableResize: true,
+		Width:         800,
+		Height:        600,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
@@ -30,6 +29,7 @@ func main() {
 			EnableFileDrop: true,
 		},
 		Mac: &mac.Options{
+
 			About: &mac.AboutInfo{
 				Title:   "Charon - File Converter",
 				Message: "© 2025 Ondřej Tuček",
