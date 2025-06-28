@@ -4,10 +4,21 @@ import { ClickToSelectFiles } from "wailsjs/go/main/App";
 import { filesContext } from "../context/files-context";
 
 export function DropArea() {
-  const { files, setFiles } = useContext(filesContext);
+  const { setFiles } = useContext(filesContext);
+
   const handleClickSelect = async () => {
     const newFiles = await ClickToSelectFiles();
-    setFiles([...new Set([...files, ...newFiles.map((p) => ({ path: p }))])]);
+
+    setFiles((prev) =>
+      [...new Set([...newFiles, ...prev.map((p) => p.path)])].map((item) => {
+        const exists = prev.find((v) => v.path === item);
+        if (exists) {
+          return exists;
+        }
+
+        return { path: item };
+      })
+    );
   };
 
   return (
