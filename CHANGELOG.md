@@ -1,4 +1,8 @@
 
+## 0.4.4 - 28.06.2025
+### Added
+- still testing
+
 ## 0.4.3 - 28.06.2025
 ### Added
 - testing the new workflow
