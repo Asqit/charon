@@ -1,4 +1,8 @@
 
+## 0.4.2 - 28.06.2025
+### Added
+- updating build action
+
 ## 0.4.1 - 28.06.2025
 ### Added
 - trying for build fix. (Used bun, but everything was configured for NPM)
