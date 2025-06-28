@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useContext } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { OnFileDrop } from "wailsjs/runtime/runtime";
 import { DropArea } from "./components/drop-area";
 import { Loading } from "./components/loading";
@@ -13,31 +13,26 @@ type State = "idle" | "loading" | "error" | "success";
 
 export function DropZone() {
   const [files, setFiles] = useState<ToConvert[]>([]);
-  const [error, setError] = useState<string>("internal server error");
+  const [error, setError] = useState<string>("");
   const [state, setState] = useState<State>("idle");
   const [time, setTime] = useState<number>(-1);
 
   const handleSubmit = useCallback(async () => {
-    const start = performance.now();
-    try {
-      setState("loading");
-      const destination = await AskForSaveLocation();
-      const isSuccess = await ConvertFiles(
-        destination,
-        files.map((i) => ({ path: i.path, format: i.format ?? "" })),
-      );
-      if (!isSuccess) {
-        setState("error");
-        setError((error as unknown as any)?.message);
-        return;
-      }
-      setState("success");
-    } catch (error) {
+    setState("loading");
+    const destination = await AskForSaveLocation();
+    const startTime = performance.now();
+    const isSuccess = await ConvertFiles(
+      destination,
+      files.map((i) => ({ path: i.path, format: i.format ?? "" }))
+    );
+    if (!isSuccess) {
       setState("error");
-      setError((error as unknown as any)?.message);
-    } finally {
-      setTime(performance.now() - start);
+      setError("An error occurred while converting the files.");
+      return;
     }
+
+    setState("success");
+    setTime(performance.now() - startTime);
   }, [files]);
 
   const handleReset = () => {
@@ -47,7 +42,16 @@ export function DropZone() {
 
   useEffect(() => {
     OnFileDrop((_x, _y, paths) => {
-      setFiles([...new Set([...files, ...paths.map((p) => ({ path: p }))])]);
+      setFiles((prev) =>
+        [...new Set([...paths, ...prev.map((p) => p.path)])].map((item) => {
+          const exists = prev.find((v) => v.path === item);
+          if (exists) {
+            return exists;
+          }
+
+          return { path: item };
+        })
+      );
     }, true);
   }, []);
 

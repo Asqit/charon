@@ -6,7 +6,8 @@ import sys
 
 def read_version() -> str:
     with open("VERSION", "r") as file:
-        return file.readline() # X.Y.Z
+        return file.readline()  # X.Y.Z
+
 
 def write_version(version: str) -> None:
     with open("VERSION", "w") as file:
@@ -43,7 +44,7 @@ def bump(current: str, part: str) -> str:
 def git_tag(version) -> None:
     subprocess.run(["git", "add", "."])
     subprocess.run(["git", "commit", "-m", f"Release v{version}"])
-    subprocess.run(["git", "tag", f"v{version}"])
+    subprocess.run(["git", "tag", "-a", f"v{version}", "-m", f"Release v{version}"])
     subprocess.run(["git", "push", "--follow-tags"])
 
 
@@ -58,7 +59,6 @@ def main() -> None:
     write_version(new_version)
     add_changelog_record(new_version)
     git_tag(new_version)
-
 
     print(f"✔️ Bumped to v{new_version}")
 

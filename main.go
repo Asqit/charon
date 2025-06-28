@@ -2,6 +2,8 @@ package main
 
 import (
 	"embed"
+	"fmt"
+	"os"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -16,8 +18,14 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
+	bytes, err := os.ReadFile("VERSION")
+	var version string = ""
+	if err == nil {
+		version = string(bytes)
+	}
+
 	// Create application with options
-	err := wails.Run(&options.App{
+	err = wails.Run(&options.App{
 		Title:         "Charon",
 		DisableResize: true,
 		Width:         800,
@@ -31,7 +39,7 @@ func main() {
 		Mac: &mac.Options{
 
 			About: &mac.AboutInfo{
-				Title:   "Charon - File Converter",
+				Title:   fmt.Sprintf("Charon %s", version),
 				Message: "© 2025 Ondřej Tuček",
 			},
 		},

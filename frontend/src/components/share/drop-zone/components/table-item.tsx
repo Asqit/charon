@@ -1,6 +1,6 @@
 import { usePromise } from "@/usePromise";
 import { Loader, Eraser } from "lucide-react";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { GetFileType } from "wailsjs/go/main/App";
 import { Button } from "@/components/ui/button";
 import { typeLookup } from "@/utils/type-lookup";
@@ -30,7 +30,11 @@ export function TableItem({ path, deleteSelf, setOutputFormat }: Props) {
         {metadata[metadata.length - 1].trim()}
       </td>
       <td className="px-4 py-2 border-b border-muted">
-        {isLoading ? "..." : result?.mimeType}
+        {isLoading
+          ? "..."
+          : status === "error"
+            ? "unknown file type"
+            : result?.mimeType}
       </td>
       <td className="px-4 py-2 border-b border-muted">
         {(() => {
@@ -38,7 +42,6 @@ export function TableItem({ path, deleteSelf, setOutputFormat }: Props) {
             case "loading":
               return <Loader className="animate-spin" />;
             case "error":
-              return <span className="text-red-600">Error Occurred</span>;
             case "success":
               return result && result?.outputFormats?.length > 0 ? (
                 <TagCombo
