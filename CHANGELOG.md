@@ -1,4 +1,8 @@
 
+## 0.4.3 - 28.06.2025
+### Added
+- testing the new workflow
+
 ## 0.4.2 - 28.06.2025
 ### Added
 - updating build action
