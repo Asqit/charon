@@ -1,4 +1,8 @@
 
+## 0.4.1 - 28.06.2025
+### Added
+- trying for build fix. (Used bun, but everything was configured for NPM)
+
 ## 0.4.0 - 28.06.2025
 ### Added
 - updated bump.py for more convinient changelog editing
