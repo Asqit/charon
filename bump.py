@@ -52,7 +52,7 @@ def git_tag(version) -> None:
     subprocess.run(["git", "add", "."])
     subprocess.run(["git", "commit", "-m", f"Release v{version}"])
     subprocess.run(["git", "tag", "-a", f"v{version}", "-m", f"Release v{version}"])
-    # subprocess.run(["git", "push", "--follow-tags"])
+    subprocess.run(["git", "push", "--follow-tags"])
 
 
 def main() -> None:
@@ -68,7 +68,6 @@ def main() -> None:
     git_tag(new_version)
 
     print(f"✔️ Bumped to v{new_version}")
-    print("to continue do `git push --follow-tags` to push to remote with your latest tags")
 
 
 if __name__ == "__main__":
