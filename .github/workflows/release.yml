@@ -2,8 +2,8 @@ name: Release Charon (macOS Universal)
 
 on:
   push:
-    branches:
-      - main # Trigger only on push to main
+    tags:
+      - "v*"
 
 env:
   NODE_OPTIONS: "--max-old-space-size=4096"
@@ -44,9 +44,37 @@ jobs:
           export UNAME=${{ matrix.arch }}
           make clean
           make build
+          cd build/bin
+          zip -r charon-${{ matrix.arch }}.zip charon.app
 
       - name: 📤 Upload Built App Artifact
         uses: actions/upload-artifact@v4
         with:
           name: charon-macos-${{ matrix.arch }}
-          path: build/bin/charon.app
+          path: build/bin/charon-${{ matrix.arch }}.zip
+
+  release:
+    name: 🚀 Publish GitHub Release
+    needs: build-macos
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 📥 Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: 📦 Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body_path: CHANGELOG.md
+          files: |
+            artifacts/charon-macos-x86_64/charon-x86_64.zip
+            artifacts/charon-macos-arm64/charon-arm64.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
