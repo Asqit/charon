@@ -2,7 +2,7 @@
 import subprocess
 import datetime
 import sys
-
+import os
 
 def read_version() -> str:
     with open("VERSION", "r") as file:
@@ -15,14 +15,21 @@ def write_version(version: str) -> None:
 
 
 def add_changelog_record(version: str) -> None:
+    editor = os.environ.get('EDITOR', 'TextEdit')
     today = datetime.date.today()
     formatted = today.strftime("%d.%m.%Y")
-    with open("CHANGELOG.md", "r", encoding="utf-8") as file:
-        prev = file.read()
-        prev = f"\n## {version} - {formatted}\n### Added\n-" + prev
+    prev: str = ""
 
-    with open("CHANGELOG.md", "w", encoding="utf-8") as file:
-        file.write(prev)
+    with open("CHANGELOG.md", "r", encoding="UTF-8") as readFile:
+        prev = readFile.read()
+        prev = f"\n## {version} - {formatted}\n### Added\n-\n" + prev
+
+    with open("CHANGELOG.md", "w", encoding="utf-8") as writeFile:
+        writeFile.write(prev)
+
+    exit_code = subprocess.Popen([editor, "CHANGELOG.md"]).wait()
+    if exit_code > 0:
+        print("failed to update changelog")
 
 
 def bump(current: str, part: str) -> str:
@@ -45,7 +52,7 @@ def git_tag(version) -> None:
     subprocess.run(["git", "add", "."])
     subprocess.run(["git", "commit", "-m", f"Release v{version}"])
     subprocess.run(["git", "tag", "-a", f"v{version}", "-m", f"Release v{version}"])
-    subprocess.run(["git", "push", "--follow-tags"])
+    # subprocess.run(["git", "push", "--follow-tags"])
 
 
 def main() -> None:
@@ -61,6 +68,7 @@ def main() -> None:
     git_tag(new_version)
 
     print(f"✔️ Bumped to v{new_version}")
+    print("to continue do `git push --follow-tags` to push to remote with your latest tags")
 
 
 if __name__ == "__main__":

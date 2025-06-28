@@ -1,14 +1,20 @@
-name: Build Charon (macOS)
+name: Release Charon (macOS Universal)
 
 on:
   push:
     branches:
-      - main
+      - main # Trigger only on push to main
+
+env:
+  NODE_OPTIONS: "--max-old-space-size=4096"
 
 jobs:
   build-macos:
-    name: 🔨 Build macOS App
+    name: 🔨 Build macOS App (x86_64 and arm64)
     runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
 
     steps:
       - name: ⬇️ Checkout Code
@@ -30,14 +36,17 @@ jobs:
       - name: 📦 Install Frontend Dependencies
         run: |
           cd frontend
-          npm install
+          npm ci
           npm run build
 
-      - name: 🔨 Build App via Makefile (includes ffmpeg copy)
-        run: make build
+      - name: 🔨 Build App for ${{ matrix.arch }}
+        run: |
+          export UNAME=${{ matrix.arch }}
+          make clean
+          make build
 
       - name: 📤 Upload Built App Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: charon-macos-app
+          name: charon-macos-${{ matrix.arch }}
           path: build/bin/charon.app
