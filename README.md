@@ -1,28 +1,22 @@
-# ⚓ Charon — Your Ferryman for File Formats
+# Charon
 
-**Charon** is a simple, sleek, desktop app for converting media files (images, videos, etc.).
-Built with [Wails](https://wails.io/) and powered by [FFmpeg](https://ffmpeg.org/), Charon lets you drag, drop, convert — and chill. 😎
+**Charon** is a simple, sleek, desktop app for converting media files (images, videos, audio). Built with [Wails](https://wails.io/) and powered by [FFmpeg](https://ffmpeg.org/), Charon lets you drag, drop, convert — and chill.
 
-## ✨ Features
+## Features
 
-- 🖱️ Drag & drop interface
-- 🔁 Per-file format selection
-- ⚙️ FFmpeg-powered conversion
+- Sleek & simple UI
+- Drag & drop interface
+- Per-file format selection
+- Uses FFmpeg for conversions
 
-## 📦 Installation
+## Development Setup
 
-*(Coming soon — once builds are automated)*
-
-
-## 🚀 Development Setup
-
-### Prerequisites
+### Prerequisities
 
 - Go 1.23+
-- Node.js + npm
-- FFmpeg (shipped with the app)
+- JavaScript runtime and NPM compatible package manager
+- FFmpeg (included in the code)
 - Wails CLI
-
 
 ### Clone & Run
 ```bash
@@ -36,8 +30,7 @@ $ wails dev
 $ wails build
 ```
 
-
-## 🧑‍💻 Author
+## Author
 
 Made by a Czech dev who appreciates good beer and clean code.
 

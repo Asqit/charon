@@ -1,19 +1,7 @@
-
 ## 0.2.0 - 23.06.2025
+
 ### Added
--
-## 0.1.4 - 17.06.2025
-### Added
--
-## 0.1.3 - 17.06.2025
-### Added
--
-## 0.1.2 - 17.06.2025
-### Added
--
-## 0.1.1 - 17.06.2025
-### Added
--
-## 0.1.0 - 17.06.2025
-### Added
--
+
+- Better macOS icon
+- Much improved UI (redesign)
+- Added common file types to combobox

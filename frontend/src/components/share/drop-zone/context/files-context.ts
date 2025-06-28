@@ -2,7 +2,9 @@ import type { ToConvert } from "@/utils/types";
 import { createContext } from "react";
 
 interface FilesContext {
-  setFiles(payload: ToConvert[]): void;
+  setFiles(
+    payload: ToConvert[] | ((previous: ToConvert[]) => ToConvert[]),
+  ): void;
   files: ToConvert[];
 }
 
