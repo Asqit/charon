@@ -1,5 +1,9 @@
 name: Release Charon (macOS Universal)
 
+permissions:
+  contents: write
+  releases: write
+
 on:
   push:
     tags:
