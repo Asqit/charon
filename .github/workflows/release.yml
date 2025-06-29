@@ -12,34 +12,53 @@ env:
   NODE_OPTIONS: "--max-old-space-size=4096"
 
 jobs:
-  build:
-    name: 🔨 Build macOS Universal App
+  build-macos:
+    name: 🔨 Build macOS App (x86_64 and arm64)
     runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
 
     steps:
       - name: ⬇️ Checkout Code
         uses: actions/checkout@v3
-        with:
-          submodules: recursive
 
-      - name: 🏗️ Build Wails App
-        uses: dAppServer/wails-build-action@v2.2
-        id: build
+      - name: 🔧 Set up Go
+        uses: actions/setup-go@v5
         with:
-          build-name: Charon
-          build-platform: darwin/universal
           go-version: "1.22"
-          package: true # generates the zip for you
 
-      - name: 📤 Upload Built Artifact
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 📦 Install Wails CLI
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+      - name: 📦 Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      - name: 🔨 Build App for ${{ matrix.arch }}
+        run: |
+          export UNAME=${{ matrix.arch }}
+          make clean
+          make build
+          cd build/bin
+          zip -r charon-${{ matrix.arch }}.zip charon.app
+
+      - name: 📤 Upload Built App Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: charon-macos-universal
-          path: ./build/bin/Charon*.zip # adjust if needed
+          name: charon-macos-${{ matrix.arch }}
+          path: build/bin/charon-${{ matrix.arch }}.zip
 
   release:
     name: 🚀 Publish GitHub Release
-    needs: build
+    needs: build-macos
     runs-on: ubuntu-latest
 
     steps:
@@ -51,12 +70,14 @@ jobs:
         with:
           path: artifacts
 
-      - name: 📦 Create GitHub Release
+      - name: 📦 Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body_path: CHANGELOG.md
-          files: artifacts/charon-macos-universal/*.zip
+          files: |
+            artifacts/charon-macos-x86_64/charon-x86_64.zip
+            artifacts/charon-macos-arm64/charon-arm64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
