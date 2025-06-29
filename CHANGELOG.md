@@ -1,4 +1,8 @@
 
+## 0.4.8 - 29.06.2025
+### Added
+- reverting release action (found my error... first time destkop app - the app must be signed and to do that I must be a official Apple Developer registered..)
+
 ## 0.4.7 - 28.06.2025
 ### Added
 - more testiiing
