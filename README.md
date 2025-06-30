@@ -1,5 +1,6 @@
 # Charon
 
+[![build](https://github.com/Asqit/charon/actions/workflows/release.yml/badge.svg)](https://github.com/Asqit/charon/actions/workflows/release.yml)
 
 **Charon** is a simple, sleek, desktop app for converting media files (images, videos, audio). Built with [Wails](https://wails.io/) and powered by [FFmpeg](https://ffmpeg.org/), Charon lets you drag, drop, convert — and chill.
 
